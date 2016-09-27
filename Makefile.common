@@ -10,27 +10,26 @@ ifndef CXX
 CXX := g++
 endif
 
-AD_LIB_ROOT=$(AD_CODE_ROOT)/Library
+AD_LIB_ROOT=$(PROJECT_ROOT)/Library
 
 MAKEDEPEND = g++ -MM -MG $(CFLAGS)
 
-TEMPDIR = $(wildcard $(AD_CODE_ROOT)/*/include $(AD_CODE_ROOT)/*/output/include)
+TEMPDIR = $(wildcard $(PROJECT_ROOT)/*/include $(PROJECT_ROOT)/*/output/include)
 TEMPDIR := $(patsubst %, -I% ,$(TEMPDIR)) 
 
-COMMONINCLUDE := -I$(AD_CODE_ROOT)/include $(TEMPDIR) -I$(AD_CODE_ROOT) 
+COMMONINCLUDE := -I$(PROJECT_ROOT)/include $(TEMPDIR) -I$(PROJECT_ROOT) 
 
-COMMONLIBS := -L$(AD_CODE_ROOT)/Library -L/usr/lib64/ -L$(AD_CODE_ROOT)/CoreSegmentor/lib/
-
-COMMONSTATICLIB :=  $(AD_CODE_ROOT)/*/lib/*.a $(AD_CODE_ROOT)/*/output/lib/*.a
+COMMONLIBS := -L$(PROJECT_ROOT)/Library -L/usr/lib64/ 
+COMMONSTATICLIB :=  $(PROJECT_ROOT)/*/lib/*.a $(PROJECT_ROOT)/*/output/lib/*.a
 COMMONLINKLIBS := 
 
-CFLAGS := -O2 -D_BIDDING_ADRCOMMON_ -D_REENTRANT -D_THREAD_SAFE -DHAVE_CXX_STDHEADERS -DLINUX -D_FILE_OFFSET_BITS=64 -march=nocona -fPIC -fopenmp -ggdb -Wall -Wl,-rpath=.:lib 
+CFLAGS := -O2 -DDEBUG -march=nocona -fPIC -fopenmp -ggdb -Wall -Wl,-rpath=.:lib 
 
 CXXFLAGS := $(CFLAGS)
 
 ifndef SKIPROOTCHECK
-ifeq (, $(findstring $(AD_CODE_ROOT), $(CURDIR))) 
-$(error Invalid AD_CODE_ROOT = $(AD_CODE_ROOT), CURDIR = $(CURDIR), You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
+ifeq (, $(findstring $(PROJECT_ROOT), $(CURDIR))) 
+$(error Invalid PROJECT_ROOT = $(PROJECT_ROOT), CURDIR = $(CURDIR), You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
 endif
 endif
 
@@ -38,4 +37,4 @@ ifeq ($(MAKELEVEL), 8)
 $(error Too deep levels)
 endif
 
-export AD_CODE_ROOT
+export PROJECT_ROOT
