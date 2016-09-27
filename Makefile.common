@@ -1,0 +1,41 @@
+#
+#	Common makefile
+#
+
+ifndef CC
+CC := gcc
+endif
+
+ifndef CXX
+CXX := g++
+endif
+
+AD_LIB_ROOT=$(AD_CODE_ROOT)/Library
+
+MAKEDEPEND = g++ -MM -MG $(CFLAGS)
+
+TEMPDIR = $(wildcard $(AD_CODE_ROOT)/*/include $(AD_CODE_ROOT)/*/output/include)
+TEMPDIR := $(patsubst %, -I% ,$(TEMPDIR)) 
+
+COMMONINCLUDE := -I$(AD_CODE_ROOT)/include $(TEMPDIR) -I$(AD_CODE_ROOT) 
+
+COMMONLIBS := -L$(AD_CODE_ROOT)/Library -L/usr/lib64/ -L$(AD_CODE_ROOT)/CoreSegmentor/lib/
+
+COMMONSTATICLIB :=  $(AD_CODE_ROOT)/*/lib/*.a $(AD_CODE_ROOT)/*/output/lib/*.a
+COMMONLINKLIBS := 
+
+CFLAGS := -O2 -D_BIDDING_ADRCOMMON_ -D_REENTRANT -D_THREAD_SAFE -DHAVE_CXX_STDHEADERS -DLINUX -D_FILE_OFFSET_BITS=64 -march=nocona -fPIC -fopenmp -ggdb -Wall -Wl,-rpath=.:lib 
+
+CXXFLAGS := $(CFLAGS)
+
+ifndef SKIPROOTCHECK
+ifeq (, $(findstring $(AD_CODE_ROOT), $(CURDIR))) 
+$(error Invalid AD_CODE_ROOT = $(AD_CODE_ROOT), CURDIR = $(CURDIR), You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
+endif
+endif
+
+ifeq ($(MAKELEVEL), 8)
+$(error Too deep levels)
+endif
+
+export AD_CODE_ROOT
