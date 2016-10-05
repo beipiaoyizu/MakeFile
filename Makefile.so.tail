@@ -1,0 +1,58 @@
+LINKDEPEND := $(LINKDEPEND) $(STATICLIB)
+
+ifdef TARGETSO
+$(TARGETSO): .depend $(OBJ) $(LINKDEPEND)
+	$(CC) -shared $(CFLAGS) $(LIB) $(OBJ) -o $(TARGETSO)
+	install -D $(TARGETSO) ./output/lib/$(shell basename $(TARGETSO))
+INSTALLSO = installso
+endif
+
+ifdef TARGETA
+$(TARGETA): .depend $(OBJ) $(LINKDEPEND)
+	ar -ru $(TARGETA) $(OBJ)
+	ranlib $(TARGETA)
+	install -D $(TARGETA) ./output/lib/$(shell basename $(TARGETA))
+	mkdir -p ./output/include
+	if [ `ls *.inl |wc -l` -gt 0 ];then cp ./*.inl ./output/include/;fi 2>>/dev/null
+	if [ `ls *.h  |wc -l` -gt 0 ];then cp ./*.h ./output/include/;fi 2>>/dev/null
+INSTALLA = installa
+endif
+
+install: $(INSTALLSO) $(INSTALLA)
+
+installso: $(TARGETSO)
+	install -m=u=wxr,g=wxr,o=rx -D $(TARGETSO) ./output/lib/$(shell basename $(TARGETSO))
+	/sbin/ldconfig
+
+installa: $(TARGETA)
+	install -m=u=wr,g=wr,o=rx -D $(TARGETA) ./output/lib/$(shell basename $(TARGETA))
+
+.cpp.o:
+	$(CXX) $(INCLUDE) $(CFLAGS) -c $< -o $@
+.cxx.o:
+	$(CXX) $(INCLUDE) $(CFLAGS) -c $< -o $@
+.cc.o:
+	$(CXX) $(INCLUDE) $(CFLAGS) -c $< -o $@
+.c.o:
+	$(CC) $(INCLUDE) $(CFLAGS) -c $< -o $@
+
+.depend: $(foreach dir, $(DIR), $(wildcard $(dir)/CVS/Entries)) $(foreach dir, $(DIR), $(wildcard  $(dir)/*.h)) $(SRC)
+	$(MAKEDEPEND) $(INCLUDE) $(SRC) > .depend
+
+depend:
+	$(MAKEDEPEND) $(INCLUDE) $(SRC) > .depend
+
+print:
+	echo $(SRC)
+	echo $(OBJ)
+
+clean:
+	rm -f $(OBJ)
+	rm -f $(TARGETSO) $(TARGETA)
+ifdef TARGETSO
+	rm -f $(AD_LIB_ROOT)/$(TARGETSO)
+endif
+ifdef TARGETA
+	rm -rf ./output/
+endif
+	rm -f .depend

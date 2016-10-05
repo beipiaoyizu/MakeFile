@@ -1,0 +1,48 @@
+ifndef SKIPROOTCHECK
+ifeq (, $(findstring $(AD_CODE_ROOT), $(CURDIR)))
+$(error Invalid AD_CODE_ROOT = $(AD_CODE_ROOT), pwd = $(CURDIR) You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
+endif
+endif
+
+
+all: $(addsuffix ._all, $(DIR))
+
+%._all:
+	$(MAKE) -C $(basename $@) all
+	mkdir -p ./$(basename $@)/output/lib
+	if [ `ls ./$(basename $@)/*/output/lib/*  |wc -l` -gt 0 ];then cp ./$(basename $@)/*/output/lib/* ./$(basename $@)/output/lib/;fi 2>>/dev/null
+test: $(addsuffix ._test, $(TESTDIR))
+
+%._test:
+	$(MAKE) -C $(basename $@) test
+
+alltest: all test
+
+install: $(addsuffix ._install, $(DIR))
+
+%._install:
+	$(MAKE) -C $(basename $@) install
+
+dist: $(addsuffix ._dist, $(DIR))
+
+%._dist:
+	$(MAKE) -C $(basename $@) dist
+
+print: $(addsuffix ._print, $(DIR))
+
+%._print:
+	$(MAKE) -C $(basename $@) print
+
+clean: $(addsuffix ._clean, $(DIR)) $(addsuffix ._clean, $(TESTDIR))
+
+%._clean:
+	$(MAKE) -C $(basename $@) clean
+	rm -rf ./output/lib ./*/output/lib
+
+depend: $(addsuffix ._depend, $(DIR))
+
+%._depend:
+	$(MAKE) -C $(basename $@) depend
+
+export AD_CODE_ROOT
+
