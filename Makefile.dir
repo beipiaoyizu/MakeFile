@@ -1,6 +1,6 @@
 ifndef SKIPROOTCHECK
-ifeq (, $(findstring $(AD_CODE_ROOT), $(CURDIR)))
-$(error Invalid AD_CODE_ROOT = $(AD_CODE_ROOT), pwd = $(CURDIR) You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
+ifeq (, $(findstring $(PROJECT_ROOT), $(CURDIR)))
+$(error Invalid PROJECT_ROOT = $(PROJECT_ROOT), pwd = $(CURDIR) You can use 'make SKIPROOTCHECK=yes' to avoid the checking.)
 endif
 endif
 
@@ -44,5 +44,5 @@ depend: $(addsuffix ._depend, $(DIR))
 %._depend:
 	$(MAKE) -C $(basename $@) depend
 
-export AD_CODE_ROOT
+export PROJECT_ROOT
 
