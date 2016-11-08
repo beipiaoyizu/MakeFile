@@ -1,12 +1,12 @@
 include $(PROJECT_ROOT)/Makefile.common
 
-DIR = .
+DIR = . SubModule
 
 INCLUDE = $(PROJECTINCLUDE) -I.
 
 LIB = $(PROJECTLIBS)
 
-TARGET_ALL = libasyncclient.a
+TARGET_ALL = main
 
 SRC := $(foreach dir, $(DIR), $(wildcard $(dir)/*.cpp))
 
